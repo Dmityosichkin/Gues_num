@@ -1,6 +1,7 @@
 package com.company;
 
 import java.io.OptionalDataException;
+import java.util.InputMismatchException;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -19,7 +20,7 @@ public class Main {
             boolean userLost = true;
             for (int i = 1; i < 10; i += 1) {
                 System.out.println("Try #" + i);
-                int userNum = scan.nextInt();
+                int userNum = askNUM();
                 if (myNum > userNum) {
                     System.out.println("a littel bit more");
                 }
@@ -49,14 +50,36 @@ public class Main {
         String answer;
         do {
             answer = scan.next();
-            if (!answer.equals("y")&& !answer.equals("n")) {
+            if (!answer.equals("y") && !answer.equals("n")) {
                 System.out.println("you can enter only 'y' or 'n' ");
-                continue;
+//                 continue; // return cycle again
             } else {
                 break;
             }
         } while (true);
         return answer;
     }
+
+    static int askNUM() {
+        int answer;
+        do {
+            try {
+                answer = scan.nextInt();
+            } catch (InputMismatchException e) {
+                System.out.println("This isn't a number");
+                scan.next();
+                continue;
+            }
+
+            if (answer < 1 || answer > 100) {
+                System.out.println("you can enter numbers from 1 to 100");
+            } else {
+                break;
+            }
+        }
+        while (true);
+        return answer;
+    }
 }
+
 
