@@ -1,19 +1,23 @@
 package com.company;
 
 import java.io.OptionalDataException;
-import java.util.InputMismatchException;
-import java.util.Random;
-import java.util.Scanner;
+import java.util.*;
 
 public class Main {
     static Random rand = new Random();
     static Scanner scan = new Scanner(System.in);
+    static List<GameResult> results = new ArrayList<>();
 
 
     public static void main(String[] args) {
         String answer;
         int scanNum = 0;
         do {
+
+            System.out.println("What is your name?");
+            String userName = scan.next();
+            long t1 = System.currentTimeMillis();
+
 
             int myNum = rand.nextInt(100) + 1;
             System.out.println(myNum);
@@ -29,8 +33,15 @@ public class Main {
 
                 }
                 if (myNum == userNum) {
-                    System.out.println("good");
+                    System.out.println("You Win");
+                    long t2 = System.currentTimeMillis();
+
                     userLost = false;
+                    GameResult r = new GameResult();
+                    r.name = userName;
+                    r.triesCount = i;
+                    r.time = (t2 - t1)/1000;
+                    results.add(r);
                     break;
                 }
             }
@@ -43,12 +54,22 @@ public class Main {
 
 
         } while (answer.equals("y"));
+
+        showResults();
         System.out.println("good bye!");
     }
+    private static void showResults() {
+        for (GameResult r : results){
+            System.out.println(r.name + " Scors: " +r.triesCount + " Time: "+ r.time+ "ms");
+    }
+
+}
 
     static String askYN() {
         String answer;
         do {
+
+
             answer = scan.next();
             if (!answer.equals("y") && !answer.equals("n")) {
                 System.out.println("you can enter only 'y' or 'n' ");
