@@ -1,6 +1,6 @@
 package com.company;
 
-import java.io.OptionalDataException;
+import java.io.*;
 import java.util.*;
 
 public class Main {
@@ -10,6 +10,8 @@ public class Main {
 
 
     public static void main(String[] args) {
+
+        loadResults();
         String answer;
         int scanNum = 0;
         do {
@@ -40,8 +42,10 @@ public class Main {
                     GameResult r = new GameResult();
                     r.name = userName;
                     r.triesCount = i;
-                    r.time = (t2 - t1)/1000;
+                    r.time = (t2 - t1);
                     results.add(r);
+                    results.sort(Comparator.<GameResult>comparingInt(r0 -> r0.triesCount)
+                             .thenComparingLong(r0-> r0.time));
                     break;
                 }
             }
@@ -56,14 +60,79 @@ public class Main {
         } while (answer.equals("y"));
 
         showResults();
+        saveResults();
+
+
         System.out.println("good bye!");
     }
-    private static void showResults() {
-        for (GameResult r : results){
-            System.out.println(r.name + " Scors: " +r.triesCount + " Time: "+ r.time+ "ms");
+
+    private static void loadResults() {
+        File file = new File("top_scores.txt");
+        try (Scanner in = new Scanner(file)) {
+
+            while (in.hasNext()) {
+                GameResult result = new GameResult();
+                result.name = in.next();
+                result.triesCount = in.nextInt();
+                result.time = in.nextLong();
+                results.add(result);
+            }
+
+        } catch (IOException e) {
+            System.out.println("Cannot load from file");
+        }
     }
 
-}
+    private static void saveResults() {
+        File file = new File("top_scores.txt");
+        try (PrintWriter out = new PrintWriter(file)) {
+            for (GameResult r : results) {
+                out.printf("%s %d %d\n", r.name, r.triesCount, r.time);
+            }
+
+        } catch (IOException e) {
+            System.out.println("Cannot save file");
+        }
+    }
+
+// ***first metod***
+//    private static void showResults() {
+//        int count = 0;
+//        for (GameResult r : results) {
+//            System.out.printf("%s - %d - %dsec\n", r.name, r.triesCount, r.time / 1000);
+//            count++;
+//            if (count == 5) {
+//                break;*/
+//            }
+//        }
+//
+//    }
+
+// ***Second metod***
+
+//    private static void showResults() {
+//
+//        int count = 5;
+//        if (results.size() < 5) {
+//            count = results.size();
+//        }
+//        for (int i = 0; i < count; i++) {
+//            GameResult r = results.get(i);
+//            System.out.printf("%s - %d - %dsec\n", r.name, r.triesCount, r.time / 1000);
+//        }
+//    }
+
+// *** final metod*** function programming
+    private static void showResults() {
+        results.stream()
+//                .filter(r -> r.name.equals("Dima"))
+//                .sorted(Comparator.<GameResult>comparingInt(r -> r.triesCount)
+//                                  .thenComparingLong(r-> r.time))
+                .limit(5)
+                .forEach(r -> {
+                    System.out.printf("%s - %d - %dsec\n", r.name, r.triesCount, r.time / 1000);
+                });
+    }
 
     static String askYN() {
         String answer;
